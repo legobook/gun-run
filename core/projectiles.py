@@ -7,12 +7,13 @@ class Projectile:
         self.direction = direction
         self.speed = 300
     
-    def update(self, screen, delta_time):
+    def update(self, screen, delta_time, camera):
         # Move the projectile
         self.position += self.direction * self.speed * delta_time
+        offset = camera.position_offset(self.position)
 
         # Draw the projectile
-        pygame.draw.circle(screen, (255, 255, 20), (self.position.x, self.position.y), 5)
+        pygame.draw.circle(screen, (255, 255, 20), (offset.x, offset.y), 5)
     
 class Projectiles:
     def __init__(self):
@@ -26,11 +27,7 @@ class Projectiles:
         # Add to projectiles
         self.projectiles.append(projectile)
     
-    def update(self, screen, delta_time):
+    def update(self, screen, delta_time, camera):
         # Update projectiles
         for i in self.projectiles:
-            i.update(screen, delta_time)
-
-            # Check if the projectile is off the screen
-            if i.position.y < 0 or i.position.x < 0 or i.position.x > screen.get_width() or i.position.y > screen.get_height():
-                self.projectiles.remove(i)
+            i.update(screen, delta_time, camera)

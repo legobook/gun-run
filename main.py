@@ -1,6 +1,8 @@
 import pygame, sys
-from core.player import Player
 from core.projectiles import Projectiles
+from core.player import Player
+from core.camera import Camera
+from core.map import Map
 
 class Game:
     def __init__(self):
@@ -12,11 +14,11 @@ class Game:
         self.uptime = pygame.time.Clock()
         pygame.display.set_caption("Gun Run")
 
-        # Initialize projectiles
+        # Initialize classes
         self.projectiles = Projectiles()
-
-        # Initialize player
-        self.player = Player(pygame.Vector2(self.screen.get_width() // 2, self.screen.get_height() // 2), self.projectiles)
+        self.player = Player(pygame.Vector2(self.screen.get_width() / 2, self.screen.get_height() / 2), self.projectiles)
+        self.camera = Camera(self.player)
+        self.map = Map()
     
     def run(self):
         while True:
@@ -32,9 +34,13 @@ class Game:
             # Calculate delta time
             delta_time = self.uptime.tick(60) / 1000
 
+            # Update camera
+            self.camera.update(self.screen)
+
             # Update classes
-            self.projectiles.update(self.screen, delta_time)
-            self.player.update(self.screen, delta_time)
+            self.map.update(self.screen, self.camera)
+            self.projectiles.update(self.screen, delta_time, self.camera)
+            self.player.update(self.screen, delta_time, self.camera)
 
             # Update screen
             pygame.display.flip()
